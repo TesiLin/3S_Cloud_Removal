@@ -8,15 +8,15 @@ def mkfile(file):
     if not os.path.exists(file):
         os.makedirs(file)
 
-is_multi = 0    # 划分数据类型 0为单图像，1为多时像
+is_multi = 1    # 划分数据类型 0为单图像，1为多时像
 
-file_path = './multipleImage'       #多时像源文件路径
+file_path = '../multipleImage'       #多时像源文件路径
 if(not is_multi):
-    file_path = './singleImage'     #单图像源文件路径
+    file_path = '../singleImage'     #单图像源文件路径
 
-new_file_path = './divide_multi'    #多时像新文件路径
+new_file_path = '../divide_multi'    #多时像新文件路径
 if(not is_multi):
-    new_file_path = './divide_single'    #单图像新文件路径
+    new_file_path = '../divide_single'    #单图像新文件路径
 
 
 
