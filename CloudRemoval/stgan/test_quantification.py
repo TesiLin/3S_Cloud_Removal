@@ -42,6 +42,10 @@ if __name__ == '__main__':
     img_list = []  #储存生成图及原图
 
     for i, data in enumerate(dataset):
+        # print(data.keys())
+        # print(data.values())
+        # exit(0)
+
         if i >= opt.num_test:  # only apply our model to opt.num_test images.
             break
         model.set_input(data)  # unpack data from data loader
