@@ -1,50 +1,55 @@
-## TRAIN
+# How to run?
 
-Modify the `config.yml` to set your parameters and run:
+### 现在支持的predict模式
 
-```bash
-python train.py
-```
+- 不确定传入一张图还是一个文件夹：`predict-batchOr1dehazed.py`
+- 传入一张图：`predict-SingleDehazed.py`
 
-## TEST
-
-现在支持只测试一张图/一个文件夹的所有图
-
-这里采用作者预训练的模型[RICE2]((./pretrained_models/RICE1/))(`./pretrained_models/RICE2/gen_model_epoch_200.pth`).
-
-测试格式（一个文件夹的图）：设置test_dir
-
-```bash
-python predict-outputdehazed.py --config <path_to_config.yml_in_the_out_dir> --test_dir <path_to_a_directory_stored_test_data> --out_dir <path_to_an_output_directory> --pretrained <path_to_a_pretrained_model> --cuda
-```
-
-测试格式（单张图）：设置test_file
-
-以测试RICE2的154.png为例
-
-```bash
-python predict-outputdehazed.py --config pretrained_models/RICE2/config.yml --out_dir ./results/test --pretrained ./pretrained_models/RICE2/gen_model_epoch_200.pth --cuda --test_file ./data/RICE_DATASET/RICE2/cloudy_image/154.png
-```
-
-同时设置或者同时不设置--test_dir和--test_file会报错
-
-
-
-具体传参个数表：
+### 命令行参数设置
 
 ```python
 # 要设置
-parser.add_argument('--test_dir', type=str, default=None, required=False)
-parser.add_argument('--test_file', type=str, default=None, required=False)
-parser.add_argument('--out_dir', type=str, required=True)
-
-# 固定
-parser.add_argument('--config', type=str, required=True)
-parser.add_argument('--pretrained', type=str, required=True)
-parser.add_argument('--cuda', action='store_true')
-
-# 可选
-parser.add_argument('--gpu_ids', type=int, default=[0])
-parser.add_argument('--manualSeed', type=int, default=0)
+# test_dir和test_file同时设置or同时不设置：会报错
+parser.add_argument('--test_dir', type=str, default=None, required=False) # Single测试代码不传这个，batchOr1可传
+parser.add_argument('--test_file', type=str, default=None, required=False) # batchOr1不传这个，Single测试必设
+parser.add_argument('--out_dir', type=str, required=True) # 必设
 ```
+
+### 格式参考
+
+可以直接运行
+
+#### 1 单张图去云
+
+首选`predict-SingleDehazed.py`
+
+```bash
+python predict-SingleDehazed.py --out_dir ./results/test --test_file ./data/RICE_DATASET/RICE2/cloudy_image/102.png
+```
+
+也可以使用`predict-batchOr1dehazed.py`
+
+```bash
+python predict-batchOr1dehazed.py --out_dir ./results/test --test_file ./data/RICE_DATASET/RICE2/cloudy_image/154.png
+```
+
+两者区别：针对单张图处理，`predict-batchOr1dehazed.py`经过更复杂封装，更慢。
+
+#### 2 一个文件夹的图去云
+
+使用`predict-batchOr1dehazed.py`，需要设置test_dir
+
+且文件夹格式为：test_dir/cloudy_image/xxx.png
+
+```bash
+python predict-batchOr1dehazed.py --out_dir ./results/test --test_dir ./data/RICE_DATASET/RICE2
+```
+
+
+
+### 其他备注
+
+- 这里采用作者预训练的模型[RICE2]((./pretrained_models/RICE1/))(`./pretrained_models/RICE2/gen_model_epoch_200.pth`)和对应的config文件
+
+- 若最终采用单图处理，则保留`predict-SingleDehazed.py`，删除没用了的`DataManager.py`
 

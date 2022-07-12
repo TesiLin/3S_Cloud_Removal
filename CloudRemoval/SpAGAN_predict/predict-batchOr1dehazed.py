@@ -1,5 +1,6 @@
 import numpy as np
 import argparse
+
 from tqdm import tqdm
 import yaml
 from attrdict import AttrMap
@@ -9,26 +10,14 @@ from torch.autograd import Variable
 from torch.utils.data import DataLoader
 
 from data_manager import TestDataset
-from utils import gpu_manage, save_image, heatmap
+from utils import gpu_manage, save_image
 from models.gen.SPANet import Generator
+from settingObj import settingObj
 
-
-def predict(config, args):
-    gpu_manage(args)
+def predict(config, args, gen):
     dataset = TestDataset(args.test_dir, args.test_file, config.in_ch, config.out_ch)
     data_loader = DataLoader(dataset=dataset, num_workers=config.threads, batch_size=1, shuffle=False)
-
-    ### MODELS LOAD ###
-    print('===> Loading models')
-
-    gen = Generator(gpu_ids=config.gpu_ids)
-
-    param = torch.load(args.pretrained)
-    gen.load_state_dict(param)
-
-    if args.cuda:
-        gen = gen.cuda(0)
-
+    
     with torch.no_grad():
         for i, batch in enumerate(tqdm(data_loader)):
             x = Variable(batch[0])
@@ -52,28 +41,48 @@ def predict(config, args):
             allim = allim.reshape((h, w, c))
 
             save_image(args.out_dir, allim, i, 4, filename=filename)
+            print("Img saved.")
 
 
-if __name__ == '__main__':
-    # python predict.py --config pretrained_models/RICE2/config.yml --test_dir ./data/RICE_DATASET/RICE2 --out_dir ./results/test --pretrained ./pretrained_models/RICE2/gen_model_epoch_200.pth --cuda
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--config', type=str, required=True)
-    parser.add_argument('--test_dir', type=str, default=None, required=False)
-    parser.add_argument('--test_file', type=str, default=None, required=False)
-    parser.add_argument('--out_dir', type=str, required=True)
-    parser.add_argument('--pretrained', type=str, required=True)
-    parser.add_argument('--cuda', action='store_true')
-    parser.add_argument('--gpu_ids', type=int, default=[0])
-    parser.add_argument('--manualSeed', type=int, default=0)
+def pretrain_load():
+    config='./pretrained_models/RICE2/config.yml'
+    pretrained = './pretrained_models/RICE2/gen_model_epoch_200.pth'
+    gpu_ids = [0]
+    manualSeed = 0
+    cuda = True
 
-    args = parser.parse_args()
-    
-    if (args.test_dir and args.test_file) or (args.test_dir is None and args.test_file is None):
-        print("[Error] Please input either test_dir or test_file.")
-        exit()
-
-    with open(args.config, 'r', encoding='UTF-8') as f:
+    with open(config, 'r', encoding='UTF-8') as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
     config = AttrMap(config)
 
-    predict(config, args)
+    args = settingObj(config, pretrained,gpu_ids,manualSeed,cuda)
+    gpu_manage(args)
+
+    ### MODELS LOAD ###
+    print('===> Loading models')
+
+    gen = Generator(gpu_ids=config.gpu_ids)
+
+    param = torch.load(args.pretrained)
+    gen.load_state_dict(param)
+
+    if args.cuda:
+        gen = gen.cuda(0)
+    
+    return gen, config, args
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--test_dir', type=str, default=None, required=False)
+    parser.add_argument('--test_file', type=str, default=None, required=False)
+    parser.add_argument('--out_dir', type=str, required=True)
+
+    input = parser.parse_args()
+
+    gen, config, args = pretrain_load()
+
+    args.append(input.test_dir, input.test_file, input.out_dir)
+
+    predict(config, args, gen)
+    print("Done.")
