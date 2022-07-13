@@ -1,7 +1,7 @@
 import math
 from PIL import Image
-Image.MAX_IMAGE_PIXELS = None
 
+Image.MAX_IMAGE_PIXELS = None
 # 暴力划分图像
 # 按从左到右，从上到下的顺序进行划分
 # 每次取256*256图像，取至不足256像素时，从原图像末尾（最右或最下）按反方向取一张256*256图像
