@@ -56,23 +56,24 @@ def image_split_violent (img, size = 256):
 
 # 确认最小重叠宽度
 # 划分图像
-def image_split(img, size):
+def image_split(img, size, min_overlap = 75):
     """
     划分图像
 
     Parameters:
         img - the origin image
         size - the side length of sub-image, default 256
+        min_overlap - Minimum width of overlapping part of two sub-images
 
     Returns:
 	    Return a dict, which include the split sub-images, their location and the size of origin image
-        example: {'images': [img0, img1, ...], 'locations': [(0,0), (0, 256), ...., (256, 256)]'size': [512, 512]}
+        example: {'images': [img0, img1, ...], 'locations': [(0,0), (0, 256), ...., (256, 256)], 'size': [512, 512]}
     """
     origin_size = img.size  #原图大小
     height = origin_size[1] #原图高
     width = origin_size[0]  #原图宽
 
-    min_overlap = 75 # 两章子图重叠部分的最小宽度
+    # min_overlap = 75 # 两张子图重叠部分的最小宽度
 
     #计算此时所需的行数和列数
     row_num = math.ceil((height - min_overlap) / (size - min_overlap))
