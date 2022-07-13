@@ -17,7 +17,7 @@ def image_split_violent (img, size = 256):
 
     Returns:
 	    Return a dict, which include the split sub-images and the size of origin image
-        example: {'images': [img0, img1, ...], 'size': [10000, 10000]}
+        example: {'images': [img0, img1, ...], 'origin_size': (10000, 10000)}
     """
     origin_size = img.size  #原图大小
     height = origin_size[1] #原图高
@@ -39,12 +39,12 @@ def image_split_violent (img, size = 256):
             sub_img = img.crop((x0, y0, x1, y1))
             img_list[i][j] = sub_img
             #最后一列划分考虑重叠情况
-            if(j == column_num - 1):
+            if(j == column_num - 2):
                 x = width - size
             else:
                 x += size
         #最后一行划分考虑重叠情况
-        if(i == row_num - 1):
+        if(i == row_num - 2):
             y = height - size
         else:
             y += size
@@ -67,7 +67,7 @@ def image_split(img, size, min_overlap = 75):
 
     Returns:
 	    Return a dict, which include the split sub-images, their location and the size of origin image
-        example: {'images': [img0, img1, ...], 'locations': [(0,0), (0, 256), ...., (256, 256)], 'size': [512, 512]}
+        example: {'images': [img0, img1, ...], 'locations': [(0,0), (0, 256), ...., (256, 256)], 'origin_size': (512, 512)}
     """
     origin_size = img.size  #原图大小
     height = origin_size[1] #原图高
@@ -99,12 +99,12 @@ def image_split(img, size, min_overlap = 75):
             img_list[i][j] = sub_img
             location_list[i][j] = (round(x0), round(y0))
             #保证恰好取到最后一列像素
-            if(j == column_num - 1):
+            if(j == column_num - 2):
                 x = width - size
             else:
                 x += dx
         #保证恰好取到最后一行像素
-        if(i == row_num - 1):
+        if(i == row_num - 2):
             y = height - size
         else:
             y += dy
@@ -140,12 +140,12 @@ def image_merge_violent(img_list, origin_size):
             
             img.paste(img_list[i][j], (x, y))
             #最后一列划分考虑重叠情况
-            if(j == column_num - 1):
+            if(j == column_num - 2):
                 x = width - size
             else:
                 x += size
         #最后一行划分考虑重叠情况
-        if(i == row_num - 1):
+        if(i == row_num - 2):
             y = height - size
         else:
             y += size

@@ -27,7 +27,10 @@ if __name__ == '__main__':
     # 读取图片
     img0 = Image.open(input_path + "/" + file_name)
     result = CloudRemoval.CloudRemoval(img0)
-    print(result)
+    
+    result.save(output_path + "/" + file_name)
+    
+    print("done")
     exit(0)
 
 

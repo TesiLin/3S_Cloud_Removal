@@ -6,7 +6,7 @@ test_list: test_list.txt
 out_dir: results
 
 cuda: False
-gpu_ids: #[0]
+gpu_ids: []
 
 train_size: 0.8
 validation_size: 0.2 # 验证集大小是占训练集的半分比

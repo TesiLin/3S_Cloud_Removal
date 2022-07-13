@@ -12,8 +12,8 @@ def del_files(dir_path):
             # if file_name != 'wibot.log':
             tf = os.path.join(dir_path, file_name)
             del_files(tf)
-    else:
-        os.mkdir(dir_path)
+
+
 
 
 # def clear_dir(dir_path):
