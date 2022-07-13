@@ -1,10 +1,9 @@
 from util import image_processing
-
+from PIL import Image
 
 
 if __name__ == '__main__':
     import cv2
-    from PIL import Image
     import matplotlib.pyplot as plt
     input_path = "./data"
     output_path = "./result"
