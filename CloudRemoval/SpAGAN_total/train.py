@@ -17,7 +17,7 @@ from data_manager import TrainDataset
 from models.gen.SPANet import Generator
 from models.dis.dis import Discriminator
 import utils
-from utils import gpu_manage, save_image, checkpoint
+from utils import gpu_manage, save_image, checkpoint, save_criterion_graph
 from eval import test
 from log_report import LogReport
 from log_report import TestReport
@@ -31,9 +31,11 @@ def train(config):
 
     dataset = TrainDataset(config)
     print('dataset:', len(dataset))
-    train_size = int((1 - config.validation_size) * len(dataset))
-    validation_size = len(dataset) - train_size
-    train_dataset, validation_dataset = torch.utils.data.random_split(dataset, [train_size, validation_size])
+    train_size = int(config.train_size * len(dataset))
+    validation_size = int(config.validation_size * len(dataset))
+    test_size = len(dataset) - train_size - validation_size
+
+    train_dataset, validation_dataset, test_dataset = torch.utils.data.random_split(dataset, [train_size, validation_size, test_size], generator=torch.Generator().manual_seed(config.manualSeed))
     print('train dataset:', len(train_dataset))
     print('validation dataset:', len(validation_dataset))
     training_data_loader = DataLoader(dataset=train_dataset, num_workers=config.threads, batch_size=config.batchsize, shuffle=True)
@@ -82,8 +84,8 @@ def train(config):
     real_b = Variable(real_b)
 
     logreport = LogReport(log_dir=config.out_dir)
-    validationreport = TestReport(log_dir=config.out_dir)
-
+    validationreport = TestReport(log_dir=config.out_dir, log_name='log_validate')
+    trainreport = TestReport(log_dir=config.out_dir, log_name='log_train')
     print('===> begin')
     start_time=time.time()
     # main
@@ -159,12 +161,15 @@ def train(config):
         with torch.no_grad():
             log_validation = test(config, validation_data_loader, gen, criterionMSE, epoch)
             validationreport(log_validation)
+            log_train = test(config, training_data_loader, gen, criterionMSE, epoch)
+            trainreport(log_train)
         print('validation finished')
         if epoch % config.snapshot_interval == 0:
             checkpoint(config, epoch, gen, dis)
 
         logreport.save_lossgraph()
-        validationreport.save_lossgraph()
+        # validationreport.save_lossgraph()
+        save_criterion_graph(config.out_dir, trainreport, validationreport)
     print('training time:', time.time() - start_time)
 
 

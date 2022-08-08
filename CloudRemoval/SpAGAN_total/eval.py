@@ -40,7 +40,7 @@ def test(config, test_data_loader, gen, criterionMSE, epoch):
             allim = allim.transpose(0, 3, 1, 4, 2)
             allim = allim.reshape((h*height, w*width, c))
 
-            save_image(config.out_dir, allim, i, epoch)
+            # save_image(config.out_dir, allim, i, epoch)
 
         mse = criterionMSE(out, t)
         psnr = 10 * np.log10(1 / mse.item())

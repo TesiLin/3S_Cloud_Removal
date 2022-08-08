@@ -5,7 +5,7 @@ import numpy as np
 
 import torch
 from torch.backends import cudnn
-
+import matplotlib.pyplot as plt
 
 def gpu_manage(config):
     if config.cuda:
@@ -85,3 +85,63 @@ def save_attention_as_heatmap(filename, att):
     att_heat = heatmap(att)
     cv2.imwrite(filename, att_heat)
     print(filename, 'saved')
+
+
+def save_criterion_graph(log_dir, train_log, valid_log):
+    train_epoch = []
+    train_mse = []
+    train_psnr = []
+    train_ssim = []
+    
+    for l in train_log.log_:
+        train_epoch.append(l['epoch'])
+        train_mse.append(l['mse'])
+        train_psnr.append(l['psnr'])
+        train_ssim.append(l['ssim'])
+
+    train_epoch = np.asarray(train_epoch)
+    train_mse = np.asarray(train_mse)
+    train_psnr = np.asarray(train_psnr)
+    train_ssim = np.asarray(train_ssim)
+
+
+    valid_epoch = []
+    valid_mse = []
+    valid_psnr = []
+    valid_ssim = []
+    
+    for l in valid_log.log_:
+        valid_epoch.append(l['epoch'])
+        valid_mse.append(l['mse'])
+        valid_psnr.append(l['psnr'])
+        valid_ssim.append(l['ssim'])
+
+    valid_epoch = np.asarray(valid_epoch)
+    valid_mse = np.asarray(valid_mse)
+    valid_psnr = np.asarray(valid_psnr)
+    valid_ssim = np.asarray(valid_ssim)
+
+    plt.subplot(311)
+    plt.plot(train_epoch, train_mse, 'b', label='train_mse')
+    plt.plot(train_epoch, valid_mse, 'r', label='valid_mse')
+    plt.xlabel('Epoch')
+    plt.ylabel('MSE')
+    plt.legend()
+
+    plt.subplot(312)
+    plt.plot(train_epoch, train_psnr, 'b', label='train_psnr')
+    plt.plot(train_epoch, valid_psnr, 'r', label='valid_psnr')
+    plt.xlabel('Epoch')
+    plt.ylabel('PSNR')
+    plt.legend()
+
+    plt.subplot(313)
+    plt.plot(train_epoch, train_ssim, 'b', label='train_ssim')
+    plt.plot(train_epoch, valid_ssim, 'r', label='valid_ssim')
+    plt.xlabel('Epoch')
+    plt.ylabel('SSIM')
+    plt.legend()
+
+    plt.savefig(os.path.join(log_dir, 'train_valid_log.pdf'))
+    plt.close()
+

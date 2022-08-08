@@ -31,16 +31,13 @@ class LogReport():
         gen_loss = np.asarray(gen_loss)
         dis_loss = np.asarray(dis_loss)
 
-        plt.plot(epoch, gen_loss)
+        plt.figure(1)
+        plt.plot(epoch, gen_loss, 'r', label='gen_loss')
+        plt.plot(epoch, dis_loss, 'b', label='dis_loss')
         plt.xlabel('epoch')
-        plt.ylabel('loss_gen')
-        plt.savefig(os.path.join(self.log_dir, 'lossgraph_gen.pdf'))
-        plt.close()
-
-        plt.plot(epoch, dis_loss)
-        plt.xlabel('epoch')
-        plt.ylabel('loss_dis')
-        plt.savefig(os.path.join(self.log_dir, 'lossgraph_dis.pdf'))
+        plt.ylabel('loss')
+        plt.legend()
+        plt.savefig(os.path.join(self.log_dir, 'lossgraph_gen_dis.pdf'))
         plt.close()
 
 
@@ -55,28 +52,3 @@ class TestReport():
         with open(os.path.join(self.log_dir, self.log_name), 'w', encoding='UTF-8') as f:
             json.dump(self.log_, f, indent=4)
     
-    def save_lossgraph(self):
-        epoch = []
-        mse = []
-        psnr = []
-        
-        for l in self.log_:
-            epoch.append(l['epoch'])
-            mse.append(l['mse'])
-            psnr.append(l['psnr'])
-
-        epoch = np.asarray(epoch)
-        mse = np.asarray(mse)
-        psnr = np.asarray(psnr)
-
-        plt.plot(epoch, mse)
-        plt.xlabel('epoch')
-        plt.ylabel('mse')
-        plt.savefig(os.path.join(self.log_dir, 'graph_mse.pdf'))
-        plt.close()
-
-        plt.plot(epoch, psnr)
-        plt.xlabel('epoch')
-        plt.ylabel('psnr')
-        plt.savefig(os.path.join(self.log_dir, 'graph_psnr.pdf'))
-        plt.close()

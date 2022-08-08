@@ -43,7 +43,7 @@ def predict(config, args, gen):
 def pretrain_load():
     config='./pretrained_models/RICE2/config.yml'
     pretrained = './pretrained_models/RICE2/gen_model_epoch_200.pth'
-    gpu_ids = [0]
+    gpu_ids = [] #[0]
     manualSeed = 0
     cuda = True
 
