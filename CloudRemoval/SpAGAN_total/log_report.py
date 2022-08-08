@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 
 
 class LogReport():
-    def __init__(self, log_dir, log_name='log'):
+    def __init__(self, log_dir, log_name='log.json'):
         self.log_dir = log_dir
         self.log_name = log_name
         self.log_ = []
@@ -26,23 +26,47 @@ class LogReport():
             epoch.append(l['epoch'])
             gen_loss.append(l['gen/loss'])
             dis_loss.append(l['dis/loss'])
+        
+        epoch_max=epoch[-1]
+        gen_sum=0
+        dis_sum=0
+        final_epoch=[]
+        final_genloss=[]
+        final_disloss=[]
+        for i in range(0, epoch_max+1):
+            epoch_count = epoch.count(i)
+            if epoch_count != 0: # 确保元素在list内
+                index_start = epoch.index(i)
+                for j in range (index_start, epoch_count + 1):
+                    gen_sum += gen_loss[j]
+                    dis_sum += dis_loss[j]
+                gen_sum = gen_sum / epoch_count
+                dis_sum = dis_sum / epoch_count
+                
+                final_epoch.append(i)
+                final_genloss.append(gen_sum)
+                final_disloss.append(dis_sum)
 
-        epoch = np.asarray(epoch)
-        gen_loss = np.asarray(gen_loss)
-        dis_loss = np.asarray(dis_loss)
+        final_epoch = np.asarray(final_epoch)
+        final_genloss = np.asarray(final_genloss)
+        final_disloss = np.asarray(final_disloss)
 
         plt.figure(1)
-        plt.plot(epoch, gen_loss, 'r', label='gen_loss')
-        plt.plot(epoch, dis_loss, 'b', label='dis_loss')
+        plt.plot(final_epoch, final_genloss, 'r', label='gen_loss')
+        plt.plot(final_epoch, final_disloss, 'b', label='dis_loss')
         plt.xlabel('epoch')
         plt.ylabel('loss')
         plt.legend()
         plt.savefig(os.path.join(self.log_dir, 'lossgraph_gen_dis.pdf'))
         plt.close()
 
+        with open(os.path.join(self.log_dir, "final_loss.txt"), 'w', encoding='UTF-8') as f:
+            f.write(final_epoch[-1]+'\t'+final_genloss[-1]+'\t'+final_disloss)
+
+
 
 class TestReport():
-    def __init__(self, log_dir, log_name='log_test'):
+    def __init__(self, log_dir, log_name='log_test.json'):
         self.log_dir = log_dir
         self.log_name = log_name
         self.log_ = []

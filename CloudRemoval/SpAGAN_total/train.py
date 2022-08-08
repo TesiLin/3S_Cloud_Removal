@@ -84,8 +84,8 @@ def train(config):
     real_b = Variable(real_b)
 
     logreport = LogReport(log_dir=config.out_dir)
-    validationreport = TestReport(log_dir=config.out_dir, log_name='log_validate')
-    trainreport = TestReport(log_dir=config.out_dir, log_name='log_train')
+    validationreport = TestReport(log_dir=config.out_dir, log_name='log_validate.json')
+    trainreport = TestReport(log_dir=config.out_dir, log_name='log_train.json')
     print('===> begin')
     start_time=time.time()
     # main
@@ -168,7 +168,6 @@ def train(config):
             checkpoint(config, epoch, gen, dis)
 
         logreport.save_lossgraph()
-        # validationreport.save_lossgraph()
         save_criterion_graph(config.out_dir, trainreport, validationreport)
     print('training time:', time.time() - start_time)
 
