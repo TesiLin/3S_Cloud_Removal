@@ -37,9 +37,9 @@ class LogReport():
             epoch_count = epoch.count(i)
             if epoch_count != 0: # 确保元素在list内
                 index_start = epoch.index(i)
-                for j in range (index_start, epoch_count + 1):
-                    gen_sum += gen_loss[j]
-                    dis_sum += dis_loss[j]
+                for j in range (0, epoch_count):
+                    gen_sum += gen_loss[index_start + j]
+                    dis_sum += dis_loss[index_start + j]
                 gen_sum = gen_sum / epoch_count
                 dis_sum = dis_sum / epoch_count
                 
@@ -61,7 +61,7 @@ class LogReport():
         plt.close()
 
         with open(os.path.join(self.log_dir, "final_loss.txt"), 'w', encoding='UTF-8') as f:
-            f.write(final_epoch[-1]+'\t'+final_genloss[-1]+'\t'+final_disloss)
+            f.write(str(final_epoch[-1])+'\t'+str(final_genloss[-1])+'\t'+str(final_disloss[-1]))
 
 
 
