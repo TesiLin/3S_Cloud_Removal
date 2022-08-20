@@ -1,8 +1,10 @@
 
 # folder path of dataset, which includes 2 subfolders: cloudy_image/ and ground_truth/
 datasets_dir: ./data/RICE_DATASET/RICE2/
-train_list: train_list.txt
-test_list: test_list.txt
+# ./data/RICE_DATASET/RICE2/
+
+# train_list: train_list.txt
+# test_list: test_list.txt
 out_dir: results
 
 cuda: True
@@ -19,15 +21,18 @@ width: 512
 height: 512
 threads: 4
 
-lr: 0.0004
+gen_lr: 0.0006
+dis_lr: 0.0004
 beta1: 0.5
 lamb: 100
-minimax: 1
+minimax: 5
+decay: 0.98
 
 gen_init: 
 dis_init: 
 in_ch: 3
 out_ch: 3
+img_size: 512
 
-manualSeed: 34
+manualSeed: 0
 snapshot_interval: 50

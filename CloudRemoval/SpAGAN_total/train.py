@@ -59,8 +59,11 @@ def train(config):
         print('load {} as pretrained model'.format(config.dis_init))
 
     # setup optimizer
-    opt_gen = optim.Adam(gen.parameters(), lr=config.lr, betas=(config.beta1, 0.999), weight_decay=0.00001)
-    opt_dis = optim.Adam(dis.parameters(), lr=config.lr, betas=(config.beta1, 0.999), weight_decay=0.00001)
+    opt_gen = optim.Adam(gen.parameters(), lr=config.gen_lr, betas=(config.beta1, 0.999), weight_decay=0.00001)
+    opt_dis = optim.Adam(dis.parameters(), lr=config.dis_lr, betas=(config.beta1, 0.999), weight_decay=0.00001)
+
+    scheduler_gen = optim.lr_scheduler.ExponentialLR(opt_gen, gamma=config.decay)
+    scheduler_dis = optim.lr_scheduler.ExponentialLR(opt_dis, gamma=config.decay)
 
     real_a = torch.FloatTensor(config.batchsize, config.in_ch, config.width, config.height)
     real_b = torch.FloatTensor(config.batchsize, config.out_ch, config.width, config.height)
@@ -164,11 +167,23 @@ def train(config):
             log_train = test(config, training_data_loader, gen, criterionMSE, epoch)
             trainreport(log_train)
         print('validation finished')
+
         if epoch % config.snapshot_interval == 0:
             checkpoint(config, epoch, gen, dis)
 
         logreport.save_lossgraph()
         save_criterion_graph(config.out_dir, trainreport, validationreport)
+
+
+        if loss_g.item() < 1e-4 and loss_d.item() < 1e-4:
+            checkpoint(config, epoch, gen, dis)
+            print("The loss value is reached")
+            break
+        elif (epoch+1) % 10 == 0:
+            # 降梯度
+            scheduler_dis.step()
+            scheduler_gen.step()
+        
     print('training time:', time.time() - start_time)
 
 
