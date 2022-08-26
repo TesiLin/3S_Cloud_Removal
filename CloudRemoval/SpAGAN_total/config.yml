@@ -1,6 +1,6 @@
 
 # folder path of dataset, which includes 2 subfolders: cloudy_image/ and ground_truth/
-datasets_dir: ./data/RICE_DATASET/RICE2/
+datasets_dir: ./data/RICE_DATASET/RICE2_updated/
 # ./data/RICE_DATASET/RICE2/
 
 # train_list: train_list.txt
@@ -15,7 +15,7 @@ validation_size: 0.2 # 验证集大小是占训练集的半分比
 test_size: 0.2
 batchsize: 1
 validation_batchsize: 1
-epoch: 500
+epoch: 1000
 n_data: 433
 width: 512
 height: 512
@@ -34,5 +34,5 @@ in_ch: 3
 out_ch: 3
 img_size: 512
 
-manualSeed: 0
+manualSeed: 8
 snapshot_interval: 50
