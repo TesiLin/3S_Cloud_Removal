@@ -4,6 +4,7 @@ import numpy as np
 #from skimage.measure import compare_ssim as SSIM
 from skimage.metrics import structural_similarity as SSIM
 
+import torch
 from torch.autograd import Variable
 
 from utils import save_image
@@ -15,7 +16,13 @@ def test(config, test_data_loader, gen, criterionMSE, epoch):
     avg_ssim = 0
     avg_lpips = 0
 
-    model = LPIPS.LPIPS(net="alex").cuda(0)
+    device = torch.device('cpu') 
+    model = LPIPS.LPIPS(net="alex")
+    if config.cuda:
+        model=model.cuda(0)
+    else:
+        model=model.to(device)
+    
     for i, batch in enumerate(test_data_loader):
         x, t = Variable(batch[0]), Variable(batch[1])
         if config.cuda:

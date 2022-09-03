@@ -1,6 +1,6 @@
 环境配置和代码更新：
 pip install attrdict
-pip install skimage
+pip install scikit-image
 pip install pip install opencv-python
 pip3 install pyyaml
 
@@ -17,9 +17,9 @@ train.py相关
 
 
 predict.py相关
-我测试了RICE1上的作者预训练gpu模型，要让predict.py在cpu上跑起来，需要改3个地方：
+我测试了RICE1上的作者预训练gpu模型，要让predict.py在cpu上跑起来，需要改4个地方：
 ① 删除测试数据集（RICE1的cloudy_image）中的txt文件
-② 替换代码成param = torch.load(args.pretrained, map_location=torch.device('cpu')) 
+② 替换predict内代码成param = torch.load(args.pretrained, map_location=torch.device('cpu')) 
 ③ 替换代码成config = yaml.load(f, Loader=yaml.FullLoader)
 ④ 模型对应的config里，gpu_ids: 后面的[0]注释掉，就没有gpu_ids
 

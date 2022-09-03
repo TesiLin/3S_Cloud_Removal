@@ -34,5 +34,5 @@ in_ch: 3
 out_ch: 3
 img_size: 512
 
-manualSeed: 8
+manualSeed: 0
 snapshot_interval: 50
