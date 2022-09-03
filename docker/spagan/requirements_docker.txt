@@ -1,0 +1,5 @@
+attrdict==2.0.1
+opencv_python_headless==4.5.5.62
+PyYAML==6.0
+scikit-image==0.19.3
+lpips==0.1.4s

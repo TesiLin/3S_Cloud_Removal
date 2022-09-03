@@ -1,0 +1,29 @@
+环境配置和代码更新：
+pip install attrdict
+pip install skimage
+pip install pip install opencv-python
+pip3 install pyyaml
+
+skimage.measure报错改这个https://blog.csdn.net/weixin_43334838/article/details/118481019
+
+
+### 改成cpu版本 ###
+
+
+train.py相关
+在config里
+    cuda: False
+    gpu_ids:
+
+
+predict.py相关
+我测试了RICE1上的作者预训练gpu模型，要让predict.py在cpu上跑起来，需要改3个地方：
+① 删除测试数据集（RICE1的cloudy_image）中的txt文件
+② 替换代码成param = torch.load(args.pretrained, map_location=torch.device('cpu')) 
+③ 替换代码成config = yaml.load(f, Loader=yaml.FullLoader)
+④ 模型对应的config里，gpu_ids: 后面的[0]注释掉，就没有gpu_ids
+
+然后运行下面命令应该就可以跑起来了
+python predict.py --config pretrained_models/RICE1/config.yml --test_dir ./data/RICE_DATASET/RICE1 --out_dir ./results --pretrained ./pretrained_models/RICE1/gen_model_epoch_200.pth
+
+运行时候的进度条指的是测了多少图片了，而不是模型载入多少了
