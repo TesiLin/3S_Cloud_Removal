@@ -14,23 +14,35 @@ class TrainDataset(data.Dataset):
         super().__init__()
         self.config = config
 
-        train_list_file = os.path.join(config.datasets_dir, config.train_list)
-        # 如果数据集尚未分割，则进行训练集和测试集的分割
-        if not os.path.exists(train_list_file) or os.path.getsize(train_list_file) == 0:
-            files = os.listdir(os.path.join(config.datasets_dir, 'ground_truth'))
-            random.shuffle(files)
-            n_train = int(config.train_size * len(files))
-            train_list = files[:n_train]
-            test_list = files[n_train:]
-            np.savetxt(os.path.join(config.datasets_dir, config.train_list), np.array(train_list), fmt='%s')
-            np.savetxt(os.path.join(config.datasets_dir, config.test_list), np.array(test_list), fmt='%s')
+        # train_list_file = os.path.join(config.datasets_dir, config.train_list)
 
-        self.imlist = np.loadtxt(train_list_file, str)
+        # # 如果数据集尚未分割，则进行训练集和测试集的分割
+        # if not os.path.exists(train_list_file) or os.path.getsize(train_list_file) == 0:
+        #     files = os.listdir(os.path.join(config.datasets_dir, 'ground_truth'))
+        #     random.shuffle(files)
+        #     n_train = int(config.train_size * len(files))
+        #     train_list = files[:n_train]
+        #     test_list = files[n_train:]
+        #     np.savetxt(os.path.join(config.datasets_dir, config.train_list), np.array(train_list), fmt='%s')
+        #     np.savetxt(os.path.join(config.datasets_dir, config.test_list), np.array(test_list), fmt='%s')
+        # self.imlist = np.loadtxt(train_list_file, str)
+        
+        files = os.listdir(os.path.join(config.datasets_dir, 'ground_truth'))
+        random.shuffle(files)
+        self.imlist = files
+        
 
     def __getitem__(self, index):
         
-        t = cv2.imread(os.path.join(self.config.datasets_dir, 'ground_truth', str(self.imlist[index])), 1).astype(np.float32)
-        x = cv2.imread(os.path.join(self.config.datasets_dir, 'cloudy_image', str(self.imlist[index])), 1).astype(np.float32)
+        t = cv2.imread(os.path.join(self.config.datasets_dir, 'ground_truth', str(self.imlist[index])), 1)
+        x = cv2.imread(os.path.join(self.config.datasets_dir, 'cloudy_image', str(self.imlist[index])), 1)
+
+        if(self.config.img_size == 256):
+            t = cv2.resize(t, dsize=None, fx=2, fy=2, interpolation=cv2.INTER_LINEAR)
+            x = cv2.resize(x, dsize=None, fx=2, fy=2, interpolation=cv2.INTER_LINEAR)
+
+        t = t.astype(np.float32)
+        x = x.astype(np.float32)
 
         M = np.clip((t-x).sum(axis=2), 0, 1).astype(np.float32)
         x = x / 255
@@ -63,7 +75,7 @@ class TestDataset(data.Dataset):
             filename = os.path.basename(self.test_files[index])
             
             x = cv2.imread(os.path.join(self.test_dir, 'cloudy_image', filename), 1).astype(np.float32)
-
+            
             x = x / 255
             
             # 这时的image是H,W,C的顺序，因此需要转化为C, H, W，维度变换正好2，0，1
