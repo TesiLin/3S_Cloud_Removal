@@ -1,0 +1,46 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: cloud-removal-cpu-training-
+  annotations: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.13, pipelines.kubeflow.org/pipeline_compilation_time: '2022-09-04T23:42:43.703848',
+    pipelines.kubeflow.org/pipeline_spec: '{"description": "A very simple demonstration",
+      "inputs": [{"default": "0.0.1-with-dataset", "name": "tag", "optional": true}],
+      "name": "Cloud Removal CPU Training"}'}
+  labels: {pipelines.kubeflow.org/kfp_sdk_version: 1.8.13}
+spec:
+  entrypoint: cloud-removal-cpu-training
+  templates:
+  - name: cloud-removal-cpu-training
+    inputs:
+      parameters:
+      - {name: tag}
+    dag:
+      tasks:
+      - name: do-trainng
+        template: do-trainng
+        arguments:
+          parameters:
+          - {name: tag, value: '{{inputs.parameters.tag}}'}
+  - name: do-trainng
+    container:
+      image: yunwei37/cloudremoval:{{inputs.parameters.tag}}
+      volumeMounts:
+      - {mountPath: /output, name: volume}
+    inputs:
+      parameters:
+      - {name: tag}
+    outputs:
+      artifacts:
+      - {name: do-trainng-data, path: /output/results}
+    metadata:
+      labels:
+        pipelines.kubeflow.org/kfp_sdk_version: 1.8.13
+        pipelines.kubeflow.org/pipeline-sdk-type: kfp
+        pipelines.kubeflow.org/enable_caching: "true"
+    volumes:
+    - emptyDir: {}
+      name: volume
+  arguments:
+    parameters:
+    - {name: tag, value: 0.0.1-with-dataset}
+  serviceAccountName: pipeline-runner

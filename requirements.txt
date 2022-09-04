@@ -1,0 +1,9 @@
+attrdict==2.0.1
+opencv-contrib-python-headless==4.6.0.66
+PyYAML==6.0
+scikit-image==0.19.3
+tqdm==4.64.0
+dominate==2.7.0
+visdom==0.1.8.9
+lpips==0.1.4
+kfp==1.8.13
