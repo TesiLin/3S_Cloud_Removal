@@ -1,3 +1,5 @@
+原始代码来自项目[SpA-GAN_for_cloud_removal](https://github.com/Penn000/SpA-GAN_for_cloud_removal)
+
 ## TRAIN
 
 Modify the `config.yml` to set your parameters and run:
